@@ -1,0 +1,606 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>コア・テキスト マーケティング 第2版 読解スライド</title>
+<style>
+  :root{
+    --primary:#0f6e5c; --primary-soft:#2f9c84; --primary-wash:#e4f0ec;
+    --bg:#f6f8f6; --surface:#ffffff; --surface-2:#eef2ee;
+    --ink:#182420; --ink-soft:#55625b; --ink-faint:#626f69;
+    --inv-surface:#182420; --inv-ink:#f6f8f6;
+    --outline:#dfe5e0; --outline-strong:#c6cfc8;
+    --warning:#965e0f; --error:#a5382f;
+    --sans:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic","Noto Sans JP",system-ui,sans-serif;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{background:#e7ece8}
+  body{
+    font-family:var(--sans); color:var(--ink); background:#e7ece8;
+    display:flex; flex-direction:column; align-items:center; padding:24px 16px 80px;
+  }
+  a{color:inherit; text-decoration:underline; text-underline-offset:3px}
+  a:focus-visible{outline:2px solid var(--primary); outline-offset:2px}
+
+  #deck{display:flex; flex-direction:column; gap:24px; counter-reset:slide}
+
+  /* ---- slide canvas: 1280x720 base, may grow vertically (縦フロー方針) ---- */
+  .slide{
+    width:1280px; min-height:720px; padding:64px;
+    background:var(--bg); border:1px solid var(--outline);
+    display:flex; flex-direction:column; counter-increment:slide;
+  }
+  .slide.inverse{background:var(--inv-surface); color:var(--inv-ink); border-color:var(--inv-surface)}
+
+  /* ---- typography roles ---- */
+  .display{font-size:72px; font-weight:700; line-height:1.15; letter-spacing:-0.02em; text-wrap:balance}
+  h2{font-size:44px; font-weight:700; line-height:1.25; letter-spacing:-0.01em; text-wrap:balance}
+  h3{font-size:28px; font-weight:600; line-height:1.4}
+  .body-lg{font-size:22px; line-height:1.7}
+  .body-md,p,li,dd,td{font-size:18px; line-height:1.7}
+  .label{font-size:13px; font-weight:500; line-height:1.5; letter-spacing:.04em}
+  .metric{font-family:var(--mono); font-size:64px; font-weight:600; line-height:1.1; letter-spacing:-0.02em; font-feature-settings:"tnum" 1; color:var(--primary)}
+
+  /* ---- structural chrome ---- */
+  .rule{width:48px; height:4px; background:var(--primary); margin-bottom:24px; flex:none}
+  .eyebrow{color:var(--ink-soft); margin-bottom:8px}
+  .slide > h2{margin-bottom:32px}
+  .foot{
+    margin-top:auto; padding-top:24px;
+    display:flex; justify-content:space-between; align-items:baseline; gap:32px;
+    color:var(--ink-faint); font-size:13px; font-weight:500; letter-spacing:.04em; line-height:1.5;
+  }
+  .inverse .foot{color:#9fb0a8}
+  .pg::after{content:counter(slide,decimal-leading-zero)}
+
+  /* ---- content blocks (縦積み前提) ---- */
+  .stack{display:flex; flex-direction:column; gap:16px}
+  .stack-lg{display:flex; flex-direction:column; gap:24px}
+  .card{background:var(--surface); border-radius:16px; padding:24px}
+  .card-accent{background:var(--primary-wash); border-radius:16px; padding:24px}
+  .chip{
+    display:inline-block; background:var(--surface-2); border-radius:8px;
+    padding:2px 12px; font-size:13px; font-weight:500; letter-spacing:.04em; color:var(--ink-soft);
+  }
+  .kicker{color:var(--ink-soft); font-size:18px; line-height:1.7; max-width:62ch}
+
+  /* term row: 用語＋定義を縦に流す */
+  .term{background:var(--surface); border-radius:16px; padding:20px 24px}
+  .term dt{font-size:22px; font-weight:600; line-height:1.5}
+  .term dt small{font-size:16px; font-weight:400; color:var(--ink-soft); margin-left:8px}
+  .term dd{color:var(--ink); margin-top:4px; max-width:66ch}
+  .term .trap{margin-top:8px; color:var(--ink-soft)}
+  .term .trap .chip{margin-right:8px}
+
+  /* vertical flow diagram */
+  .flow{display:flex; flex-direction:column; align-items:stretch; gap:0}
+  .flow .card,.flow .card-accent{text-align:left}
+  .flow-arrow{
+    display:flex; align-items:center; gap:12px; padding:8px 24px; color:var(--ink-soft); font-size:16px; line-height:1.5;
+  }
+  .flow-arrow::before{content:"↓"; font-size:22px; color:var(--outline-strong); font-weight:700}
+
+  /* tables */
+  table{border-collapse:collapse; width:100%; background:var(--surface)}
+  caption{text-align:left; padding-bottom:12px}
+  th{
+    background:var(--surface-2); color:var(--ink-soft); font-size:13px; font-weight:500;
+    letter-spacing:.04em; text-align:left; padding:12px 16px; border:1px solid var(--outline); line-height:1.5;
+  }
+  td{padding:12px 16px; border:1px solid var(--outline); vertical-align:top}
+  td ul{list-style:none}
+  td ul li{padding-left:1em; text-indent:-1em}
+  td ul li::before{content:"・"}
+  .rowhead{font-weight:600; white-space:nowrap; background:var(--surface)}
+
+  ol.book{list-style:none; display:flex; flex-direction:column; gap:12px}
+  ol.book li{background:var(--surface); border-radius:16px; padding:16px 24px; font-size:20px; line-height:1.6}
+  ol.book li b{font-weight:600}
+  ol.book .no{font-family:var(--mono); color:var(--primary); font-weight:600; margin-right:12px}
+
+  ul.plain{list-style:none; display:flex; flex-direction:column; gap:8px}
+  ul.plain li{padding-left:1em; text-indent:-1em}
+  ul.plain li::before{content:"・"}
+
+  .check{width:100%}
+  .check td:first-child{width:32px; color:var(--outline-strong); font-size:16px}
+
+  svg text{font-family:var(--sans)}
+
+  @media (max-width:1328px){ body{align-items:flex-start} }
+</style>
+
+<main id="deck">
+
+<!-- 01 表紙 -->
+<section class="slide inverse" aria-label="表紙">
+  <div class="rule" style="background:var(--primary-soft)"></div>
+  <div style="margin:auto 0">
+    <p class="label" style="color:#9fb0a8; margin-bottom:24px">読解スライド｜論文接続と概念整理</p>
+    <h1 class="display">コア・テキスト<br>マーケティング 第2版</h1>
+    <p class="body-lg" style="color:#c8d2cc; margin-top:24px">山本晶 著（サイエンス社）— スキャン実読4ページの完全解説と、本書を軸にした理論マップ</p>
+  </div>
+  <div class="foot"><span>2026-07-25 作成</span><span class="pg"></span></div>
+</section>
+
+<!-- 02 データ範囲 -->
+<section class="slide" aria-label="データ範囲">
+  <div class="rule"></div>
+  <p class="eyebrow label">はじめに</p>
+  <h2>今回読み取れた範囲</h2>
+  <div class="stack">
+    <div class="card-accent">
+      <p class="body-lg">Driveのフォルダに現存するスキャンは<b>写真6枚＝実質4ページ</b>。1〜12章すべてのスキャンはまだフォルダに存在しない。</p>
+    </div>
+    <div class="card">
+      <p><b>スキャン実読（本文どおりに解説）</b><br>pp.176-177 …… 第9章 プロモーション戦略｜9.5 セールス・プロモーション（SP）<br>pp.204-205 …… 第10章 ブランド戦略｜10.4 ブランド・エクイティ（※204-205は重複撮影あり）</p>
+    </div>
+    <div class="card">
+      <p><b>書誌・研究提案書ベース（枠組みのみ）</b><br>本書の4部構成と論文接続マップ。未収録章の詳細解説は、スキャン追加後に同じ粒度で拡張する。</p>
+    </div>
+  </div>
+  <div class="foot"><span>対象: Google Drive「コアテキストマーケティング」フォルダ全点（2026-07-25時点）</span><span class="pg"></span></div>
+</section>
+
+<!-- 03 全体マップ -->
+<section class="slide" aria-label="全体マップ">
+  <div class="rule"></div>
+  <p class="eyebrow label">本書の全体像</p>
+  <h2>4部構成と論文への効き方</h2>
+  <table>
+    <thead><tr><th style="width:200px">部</th><th>主なテーマ</th><th style="width:400px">論文への意味</th></tr></thead>
+    <tbody>
+      <tr><td class="rowhead">第1部<br>基礎と市場の理解</td><td>マーケティングの定義、戦略立案プロセス、外部・内部環境分析</td><td>序論・背景の語彙。RQを俯瞰的に設定する視座</td></tr>
+      <tr><td class="rowhead">第2部<br>4Pとブランド戦略</td><td>製品・価格・流通・プロモーション（<b>9章</b>）・ブランド（<b>10章</b>）</td><td>論文の中核。施策＝プロモーション、成果＝エクイティ</td></tr>
+      <tr><td class="rowhead">第3部<br>道具箱</td><td>消費者行動、マーケティング・リサーチ</td><td>実験設計・行動ログ分析など方法論の土台</td></tr>
+      <tr><td class="rowhead">第4部<br>新潮流</td><td>デジタル環境下の消費者行動とコミュニケーション戦略（第2版で新設）</td><td>インフルエンサー研究の直接の理論的基盤。レビューの起点</td></tr>
+    </tbody>
+  </table>
+  <p class="kicker" style="margin-top:16px">章番号がスキャンで確定しているのは9章・10章のみ。他章の番号は原本で要確認。</p>
+  <div class="foot"><span>出典: Drive「コア・テキストマーケティング研究提案」＋公開書誌情報</span><span class="pg"></span></div>
+</section>
+
+<!-- 04 論文接続の全体図 -->
+<section class="slide" aria-label="論文接続マップ">
+  <div class="rule"></div>
+  <p class="eyebrow label">論文への接続</p>
+  <h2>本書2章と研究テーマの結線</h2>
+  <div class="flow">
+    <div class="card">
+      <p class="label" style="color:var(--ink-soft); margin-bottom:4px">第9章 プロモーション戦略｜施策の分類軸</p>
+      <p>SPの4類型（価格訴求・情報提供・体験提供・インセンティブ）。ポップアップは<b>体験提供型SP</b>の現代形、クーポンやフリクエンシー・プログラムはD2CのCRM施策の原型。</p>
+    </div>
+    <div class="flow-arrow">施策を「誰が×何のために」で位置づける枠組みを提供</div>
+    <div class="card-accent">
+      <p class="label" style="color:var(--ink-soft); margin-bottom:4px">論文テーマ（研究提案書）</p>
+      <p><b>KOLの階層×ポップアップ（O2O）の相乗効果</b>——快楽的製品（D2Cアクセサリー）で、真正性・パラソーシャル関係を媒介にCVR・LTV・ブランド態度への効果を実証。</p>
+    </div>
+    <div class="flow-arrow" style="transform:scaleY(-1)"><span style="transform:scaleY(-1)">従属変数（態度・LTV）の理論的定義を提供</span></div>
+    <div class="card">
+      <p class="label" style="color:var(--ink-soft); margin-bottom:4px">第10章 ブランド戦略｜成果の定義</p>
+      <p>ブランド・エクイティの5要素。KOL経由の<b>認知</b>形成、真正性は<b>連想・知覚品質</b>、LTVは<b>ロイヤルティ</b>——ただしリキッド消費研究がこの前提を揺さぶる（理論的貢献の切り口）。</p>
+    </div>
+  </div>
+  <div class="foot"><span>出典: 本書9章・10章（スキャン実読）＋研究提案書</span><span class="pg"></span></div>
+</section>
+
+<!-- 05 divider 9章 -->
+<section class="slide inverse" aria-label="第9章とびら">
+  <div class="rule" style="background:var(--primary-soft)"></div>
+  <div style="margin:auto 0">
+    <p class="label" style="color:#9fb0a8; margin-bottom:16px">スキャン実読｜pp.176-177</p>
+    <h2 class="display" style="font-size:64px">第9章 プロモーション戦略<br>9.5 セールス・プロモーション</h2>
+  </div>
+  <div class="foot"><span>SP = Sales Promotion</span><span class="pg"></span></div>
+</section>
+
+<!-- 06 SPの4目的 -->
+<section class="slide" aria-label="SPの4つの目的">
+  <div class="rule"></div>
+  <p class="eyebrow label">9.5 SP｜p.176</p>
+  <h2>SPの目的は4つに分けられる</h2>
+  <ol class="book">
+    <li><span class="no">1</span><b>価格訴求</b> — 価格を下げる、または価格あたりの分量を増やして直接的・短期的に売上増大を目指す</li>
+    <li><span class="no">2</span><b>情報提供</b> — 製品・サービスの詳細な情報を提供して購買促進・売上拡大を目指す</li>
+    <li><span class="no">3</span><b>体験の提供</b> — 試す機会を提供する（サンプリング、モニタリング、デモンストレーション）</li>
+    <li><span class="no">4</span><b>購買のインセンティブ提供</b> — 懸賞・景品・ポイントなどで購買の動機づけをする</li>
+  </ol>
+  <p class="kicker" style="margin-top:16px">①②の定義文はスキャン本文どおり。③④の細部定義は未スキャンページ（p.178以降）で要確認。</p>
+  <div class="foot"><span>出典: 本書 p.176（スキャン実読）</span><span class="pg"></span></div>
+</section>
+
+<!-- 07 図表9.2（縦長スライド） -->
+<section class="slide" aria-label="図表9.2 SPの分類" style="min-height:920px">
+  <div class="rule"></div>
+  <p class="eyebrow label">9.5 SP｜p.176｜クイズ最重要</p>
+  <h2>図表9.2 SPの分類 — 主体×目的</h2>
+  <table>
+    <thead>
+      <tr>
+        <th style="width:150px">分類</th>
+        <th>メーカーによる<br>消費者向けプロモーション</th>
+        <th>メーカーによる<br>流通業者向けプロモーション</th>
+        <th>小売業者による<br>消費者向けプロモーション</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="rowhead">価格訴求型</td>
+        <td><ul><li>キャッシュバック</li><li>クーポン</li><li>増量パック</li><li>バンドリング</li></ul></td>
+        <td><ul><li>アローワンス（協賛金、販促金）</li><li>特別出荷（増量、値引き）</li></ul></td>
+        <td><ul><li>値引き</li><li>クーポン</li><li>バンドリング</li></ul></td>
+      </tr>
+      <tr>
+        <td class="rowhead">情報提供型</td>
+        <td><ul><li>ダイレクト・メール</li></ul></td>
+        <td><ul><li>トレードショー</li></ul></td>
+        <td><ul><li>チラシ</li><li>店頭POP</li><li>特別陳列</li></ul></td>
+      </tr>
+      <tr>
+        <td class="rowhead">体験提供型</td>
+        <td><ul><li>サンプリング</li><li>モニタリング</li></ul></td>
+        <td><ul><li>サンプリング</li></ul></td>
+        <td><ul><li>デモンストレーション</li></ul></td>
+      </tr>
+      <tr>
+        <td class="rowhead">インセンティブ<br>提供型</td>
+        <td><ul><li>オープン懸賞</li><li>クローズド懸賞</li><li>プレミアム（景品）</li><li>コンテスト</li><li>セルフ・リキデーション</li><li>フリクエンシー・プログラム</li></ul></td>
+        <td><ul><li>コンテスト</li><li>販売助成</li></ul></td>
+        <td><ul><li>スタンプ</li><li>フリクエンシー・プログラム</li><li>スピードくじ</li></ul></td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="kicker" style="margin-top:16px">列＝誰が誰に行うか、行＝目的。<b>増量パックはメーカー専用</b>、サンプリングとフリクエンシー・プログラムは複数列に登場——ここが問われる。</p>
+  <div class="foot"><span>出所: 上田・守口（2004）より筆者作成（本書 図表9.2）。原典は青系配色、本スライドはトンマナ準拠で再配色</span><span class="pg"></span></div>
+</section>
+
+<!-- 08 価格訴求型の用語 -->
+<section class="slide" aria-label="価格訴求型SPの用語" style="min-height:860px">
+  <div class="rule"></div>
+  <p class="eyebrow label">9.5 SP｜pp.176-177｜本文で色付きの語</p>
+  <h2>価格訴求型SPの重要語</h2>
+  <dl class="stack">
+    <div class="term">
+      <dt>クーポン</dt>
+      <dd>ある製品に対して<b>一定額の値引きを約束した証書</b>。持参して対象製品を買うと記載額の値引きを受けられる。</dd>
+      <p class="trap"><span class="chip">落とし穴</span>「価格の引き下げ」ではない——持っていない人は値引きされない。配布は紙媒体からスマートフォン配信へ移行。</p>
+    </div>
+    <div class="term">
+      <dt>増量パック</dt>
+      <dd>製品の<b>内容量を増加</b>させることで結果的に値引きとなる手法。</dd>
+      <p class="trap"><span class="chip">落とし穴</span>実施できるのはメーカーのみ（中身を変えられるのはメーカーだけ）。</p>
+    </div>
+    <div class="term">
+      <dt>バンドリング<small>bundling</small></dt>
+      <dd>個々の商品を<b>セットにして包装</b>し、<b>割安感</b>を与えて販売する方法。</dd>
+      <p class="trap"><span class="chip">補足</span>メーカー・小売の両方が実施できる。英語表記も併記して覚える。</p>
+    </div>
+    <div class="term">
+      <dt>キャッシュバック</dt>
+      <dd>クーポンと並び、<b>消費者の支払負担を低下</b>させる消費者向け価格訴求型の代表。</dd>
+    </div>
+  </dl>
+  <div class="foot"><span>出典: 本書 pp.176-177（スキャン実読）</span><span class="pg"></span></div>
+</section>
+
+<!-- 09 流通向け・情報提供型の用語 -->
+<section class="slide" aria-label="流通業者向けと情報提供型の用語" style="min-height:860px">
+  <div class="rule"></div>
+  <p class="eyebrow label">9.5 SP｜p.177｜本文で色付きの語</p>
+  <h2>流通業者向けと情報提供型の重要語</h2>
+  <dl class="stack">
+    <div class="term">
+      <dt>アローワンス<small>allowance</small></dt>
+      <dd><b>協賛金・販促金</b>とも呼ばれ、特定製品の店頭キャンペーン実施の際に<b>企業が流通業者に支払う金銭的見返り</b>。特売時の値下げ分を補填する資金。</dd>
+      <p class="trap"><span class="chip">最頻出</span>「<b>リベートとは区別される</b>」——アローワンス＝販促の値下げ補填。混同させる選択肢が定番。</p>
+    </div>
+    <div class="term">
+      <dt>特別出荷</dt>
+      <dd>メーカーが流通に出荷する際の<b>納入金額や納入量において優遇</b>すること（増量、値引き）。</dd>
+      <p class="trap"><span class="chip">補足</span>出荷条件の優遇であって、店頭価格の操作ではない。</p>
+    </div>
+    <div class="term">
+      <dt>ダイレクト・メール<small>DM</small></dt>
+      <dd>対<b>消費者</b>の情報提供型SPの代表例。</dd>
+    </div>
+    <div class="term">
+      <dt>トレードショー<small>trade show</small></dt>
+      <dd>製品・サービスの<b>関連業者を集めて開催する商品見本市</b>。企業はブースを買い取り、紹介し、その場で商談も行う。</dd>
+      <p class="trap"><span class="chip">対応関係</span>対消費者＝DM、対流通業者＝トレードショー、のペアで覚える。</p>
+    </div>
+  </dl>
+  <div class="foot"><span>出典: 本書 p.177（スキャン実読）</span><span class="pg"></span></div>
+</section>
+
+<!-- 10 リスクと論文含意 -->
+<section class="slide" aria-label="価格訴求型SPのリスク">
+  <div class="rule"></div>
+  <p class="eyebrow label">9.5 SP｜p.177</p>
+  <h2>価格訴求型SPのトレードオフ</h2>
+  <div class="stack-lg">
+    <div class="card-accent">
+      <p class="body-lg">「短期的に売上を増大させるには有効ですが、<b>長期的にはブランド・イメージを傷つけるリスク</b>があります」（本文）</p>
+    </div>
+    <div class="card">
+      <p><b>論文での使い方</b> — D2Cブランドが値引きに頼らず、KOL（情報×疑似体験）とポップアップ（体験提供型SP）で選好を作る戦略の理論的正当化として、この一文をそのまま引用できる。記述問題では「短期効果と長期リスクの対比」で書く。</p>
+    </div>
+  </div>
+  <div class="foot"><span>出典: 本書 p.177（スキャン実読）</span><span class="pg"></span></div>
+</section>
+
+<!-- 11 divider 10章 -->
+<section class="slide inverse" aria-label="第10章とびら">
+  <div class="rule" style="background:var(--primary-soft)"></div>
+  <div style="margin:auto 0">
+    <p class="label" style="color:#9fb0a8; margin-bottom:16px">スキャン実読｜pp.204-205</p>
+    <h2 class="display" style="font-size:64px">第10章 ブランド戦略<br>10.4 ブランド・エクイティ</h2>
+  </div>
+  <div class="foot"><span>brand equity</span><span class="pg"></span></div>
+</section>
+
+<!-- 12 定義と背景 -->
+<section class="slide" aria-label="ブランド・エクイティの定義">
+  <div class="rule"></div>
+  <p class="eyebrow label">10.4｜p.204</p>
+  <h2>定義と登場の背景</h2>
+  <div class="stack-lg">
+    <div class="card-accent">
+      <p class="body-lg"><b>ブランド・エクイティ</b>（brand equity）＝ブランドに関する要素を総合して企業の<b>「資産」</b>としてとらえる考え方。提唱の代表は<b>アーカー</b>（Aaker, David A.）。</p>
+    </div>
+    <div class="card">
+      <p><b>背景（ここが問われる）</b><br>日本企業がブランドづくりを意識し始めたのは<b>1990年代半ば</b>。ブランドは<b>ヒト・モノ・カネ・情報に次ぐ重要な経営資源</b>であり、<b>測定・管理するもの</b>という考え方が広まった。</p>
+    </div>
+  </div>
+  <div class="foot"><span>出典: 本書 p.204（スキャン実読）。引用表記は（アーカー, 1994）</span><span class="pg"></span></div>
+</section>
+
+<!-- 13 4前提 -->
+<section class="slide" aria-label="アーカーの4前提">
+  <div class="rule"></div>
+  <p class="eyebrow label">10.4｜p.205｜番号付きで列挙される</p>
+  <h2>エクイティ論の4つの前提</h2>
+  <ol class="book">
+    <li><span class="no">1</span>ブランドは<b>無形資産</b>である</li>
+    <li><span class="no">2</span>ブランドは<b>金銭的評価が可能</b>である</li>
+    <li><span class="no">3</span>ブランドは<b>管理により、その価値が増減</b>する</li>
+    <li><span class="no">4</span><b>強力なブランドをもつこと</b>が企業のマーケティングにとって重要である</li>
+  </ol>
+  <p class="kicker" style="margin-top:16px">「4つ挙げよ」型の定番。圧縮暗記——無形・金銭評価可・管理で増減・強いブランドが重要。</p>
+  <div class="foot"><span>出典: 本書 p.205（スキャン実読、アーカー, 1994）</span><span class="pg"></span></div>
+</section>
+
+<!-- 14 図表10.5 -->
+<section class="slide" aria-label="図表10.5 ブランド・エクイティ">
+  <div class="rule"></div>
+  <p class="eyebrow label">10.4｜p.204</p>
+  <h2>図表10.5 ブランド・エクイティの5要素</h2>
+  <svg viewBox="0 0 1000 560" role="img" aria-label="中心のブランド・エクイティに5要素が接続する放射図" style="width:100%; max-width:940px; margin:0 auto">
+    <g stroke="#c6cfc8" stroke-width="3">
+      <line x1="500" y1="300" x2="500" y2="95"></line>
+      <line x1="500" y1="300" x2="790" y2="195"></line>
+      <line x1="500" y1="300" x2="700" y2="470"></line>
+      <line x1="500" y1="300" x2="300" y2="470"></line>
+      <line x1="500" y1="300" x2="210" y2="195"></line>
+    </g>
+    <g>
+      <circle cx="500" cy="300" r="100" fill="#0f6e5c"></circle>
+      <text x="500" y="292" text-anchor="middle" fill="#f6f8f6" font-size="26" font-weight="700">ブランド・</text>
+      <text x="500" y="326" text-anchor="middle" fill="#f6f8f6" font-size="26" font-weight="700">エクイティ</text>
+    </g>
+    <g fill="#e4f0ec" stroke="#c6cfc8" stroke-width="2">
+      <circle cx="500" cy="95" r="75"></circle>
+      <circle cx="790" cy="195" r="75"></circle>
+      <circle cx="700" cy="470" r="75"></circle>
+      <circle cx="300" cy="470" r="75"></circle>
+      <circle cx="210" cy="195" r="75"></circle>
+    </g>
+    <g fill="#182420" font-size="20" font-weight="600" text-anchor="middle">
+      <text x="500" y="88">ブランド・</text><text x="500" y="114">ロイヤルティ</text>
+      <text x="790" y="202">ブランド認知</text>
+      <text x="700" y="477">ブランド連想</text>
+      <text x="300" y="477">知覚品質</text>
+      <text x="210" y="188">その他</text><text x="210" y="214">ブランド資産</text>
+    </g>
+  </svg>
+  <p class="kicker">中心＝ブランド・エクイティ。5要素の完全再現が出題ポイント（順不同）。本文の詳説はロイヤルティ・認知まで（連想・知覚品質・その他はp.206以降＝未スキャン）。</p>
+  <div class="foot"><span>出典: 本書 図表10.5（p.204、スキャン実読）。原典は青系、本スライドはトンマナ準拠で再配色</span><span class="pg"></span></div>
+</section>
+
+<!-- 15 ロイヤルティ -->
+<section class="slide" aria-label="ブランド・ロイヤルティ">
+  <div class="rule"></div>
+  <p class="eyebrow label">10.4｜p.205｜本文で色付きの語</p>
+  <h2>ブランド・ロイヤルティ</h2>
+  <div class="stack">
+    <div class="card-accent">
+      <p class="body-lg"><b>brand loyalty</b>＝消費者が特定のブランドを<b>愛用する度合い</b>。ブランドへの<b>忠誠（loyalty）</b>であり、印税・著作権使用料の<b>“royalty”とは別物</b>。</p>
+    </div>
+    <div class="card">
+      <p><b>高いと何が起きるか（3つの効果）</b></p>
+      <ul class="plain" style="margin-top:8px">
+        <li>反復購買が増え、<b>収益の安定性</b>が向上する</li>
+        <li>既存顧客の維持にコストがかからず、<b>全体的なコスト低減</b>につながる</li>
+        <li>競合の<b>顧客獲得コスト</b>（広告宣伝費・新製品開発）を増加させ、競合の力を弱める</li>
+      </ul>
+    </div>
+  </div>
+  <p class="kicker" style="margin-top:16px">loyalty／royaltyの区別は本文がわざわざ注意している＝出題確率が高い。</p>
+  <div class="foot"><span>出典: 本書 p.205（スキャン実読）</span><span class="pg"></span></div>
+</section>
+
+<!-- 16 認知と知識 -->
+<section class="slide" aria-label="ブランド認知とブランド知識">
+  <div class="rule"></div>
+  <p class="eyebrow label">10.4｜p.205｜本文で色付きの語</p>
+  <h2>ブランド認知とブランド知識</h2>
+  <div class="flow">
+    <div class="card">
+      <p class="label" style="color:var(--ink-soft); margin-bottom:4px">上位概念</p>
+      <p><b>ブランド知識</b>＝消費者の頭の中にあるブランドに関する知識。優れたブランド知識の構築が、ブランドの資産価値（＝エクイティ）を高める。</p>
+    </div>
+    <div class="flow-arrow">その一部が</div>
+    <div class="card">
+      <p class="label" style="color:var(--ink-soft); margin-bottom:4px">下位概念</p>
+      <p><b>ブランド認知</b>（brand awareness）＝知っているかという<b>認知の有無</b>×どれぐらいよく知っているかという<b>認知の深さ</b>。認知度が高いと<b>購買意思決定の際に検討される可能性が高まる</b>。</p>
+    </div>
+  </div>
+  <p class="kicker" style="margin-top:16px">「有無×深さ」の2次元と、知識⊃認知の包含関係——2点セットで覚える。ケラーのCBBE（ブランド知識＝認知＋イメージ）への入口でもある。</p>
+  <div class="foot"><span>出典: 本書 p.205（スキャン実読）。p.205末尾は次ページへ続く（未スキャン）</span><span class="pg"></span></div>
+</section>
+
+<!-- 17 チェックリスト（縦長） -->
+<section class="slide" aria-label="クイズ対策チェックリスト" style="min-height:980px">
+  <div class="rule"></div>
+  <p class="eyebrow label">総復習</p>
+  <h2>クイズ対策チェックリスト</h2>
+  <div class="stack-lg">
+    <div>
+      <h3 style="margin-bottom:12px">第9章 9.5 SP</h3>
+      <table class="check">
+        <tbody>
+          <tr><td>☐</td><td>SPの4つの目的（価格訴求・情報提供・体験提供・インセンティブ提供）を言える</td></tr>
+          <tr><td>☐</td><td>図表9.2の3列（メーカー→消費者／メーカー→流通／小売→消費者）と各セルを再現できる</td></tr>
+          <tr><td>☐</td><td>クーポン＝値引きを約束した「証書」。価格の引き下げではない理由を説明できる</td></tr>
+          <tr><td>☐</td><td>アローワンス＝協賛金・販促金、リベートとは区別——を説明できる</td></tr>
+          <tr><td>☐</td><td>バンドリング・増量パック・特別出荷・トレードショー・DMの定義を言える</td></tr>
+          <tr><td>☐</td><td>価格訴求型SPの長期リスクと、図表の出所「上田・守口（2004）」を言える</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <h3 style="margin-bottom:12px">第10章 10.4 ブランド・エクイティ</h3>
+      <table class="check">
+        <tbody>
+          <tr><td>☐</td><td>エクイティの定義（要素を総合して企業の「資産」ととらえる）を言える</td></tr>
+          <tr><td>☐</td><td>日本企業のブランド注目＝1990年代半ば／ヒト・モノ・カネ・情報に次ぐ経営資源</td></tr>
+          <tr><td>☐</td><td>アーカーの4前提（無形・金銭評価可・管理で増減・強いブランドが重要）を挙げられる</td></tr>
+          <tr><td>☐</td><td>図表10.5の5要素（ロイヤルティ・認知・連想・知覚品質・その他資産）を再現できる</td></tr>
+          <tr><td>☐</td><td>loyaltyとroyaltyの違い＋ロイヤルティの3つの効果を説明できる</td></tr>
+          <tr><td>☐</td><td>ブランド認知＝有無×深さ、ブランド知識⊃ブランド認知、出典（アーカー, 1994）</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="foot"><span>詳細解説: リポジトリ core-text-marketing/01_概念解説と論文接続.md</span><span class="pg"></span></div>
+</section>
+
+<!-- 18 divider 外部理論 -->
+<section class="slide inverse" aria-label="外部理論とびら">
+  <div class="rule" style="background:var(--primary-soft)"></div>
+  <div style="margin:auto 0">
+    <p class="label" style="color:#9fb0a8; margin-bottom:16px">本書を座標軸にして</p>
+    <h2 class="display" style="font-size:64px">外部理論・実務概念との<br>比較整理</h2>
+  </div>
+  <div class="foot"><span>トリプルメディア／シャープ×森岡／ジョブ理論</span><span class="pg"></span></div>
+</section>
+
+<!-- 19 トリプルメディア -->
+<section class="slide" aria-label="トリプルメディアと新トリプルメディア" style="min-height:860px">
+  <div class="rule"></div>
+  <p class="eyebrow label">比較①｜9章・第4部の文脈</p>
+  <h2>トリプルメディア → 新トリプルメディア</h2>
+  <div class="flow">
+    <div class="card">
+      <p class="label" style="color:var(--ink-soft); margin-bottom:4px">2010｜横山隆治『トリプルメディアマーケティング』</p>
+      <p><b>ペイド／オウンド／アーンド</b>——接点を「メディアの所有形態」で3分類（原型は米国のPOE、のちPESOへ派生）。TVCM起点・マス向けワンメッセージ時代の整理。</p>
+    </div>
+    <div class="flow-arrow">15年の環境変化（視聴の断片化・店頭のメディア化・SNS起点化）を受け、同じ提唱者が自ら更新</div>
+    <div class="card-accent">
+      <p class="label" style="color:var(--ink-soft); margin-bottom:4px">2025.07｜横山隆治ほか『新トリプルメディアマーケティング』（翔泳社）</p>
+      <p><b>SNS × コンバージドTV × リテールメディア</b>——「いま消費者が実際にいる接点」で切り直し。SNSを起点に、パーセプション（認識）ごとにメッセージを出し分け、3要素の連携を仕組み化する。</p>
+    </div>
+    <div class="flow-arrow">本書の語彙に翻訳すると</div>
+    <div class="card">
+      <p>本書9章は<b>手法</b>の分類（広告・PR・人的販売・SP）、トリプルメディアは<b>所有形態</b>、新トリプルは<b>接点×データ</b>の分類——図表9.2と同じ「軸を立てて全体を見る」思考法の実務版。<b>リテールメディア＝図表9.2第3列（小売業者による消費者向けSP）</b>のメディア化と説明できる。</p>
+    </div>
+  </div>
+  <div class="foot"><span>出典: 翔泳社書誌・MarkeZine掲載記事（2026-07-25取得）。KOL投稿は「ペイドとアーンドの中間」＝分類の境界事例→論文の導入に使える</span><span class="pg"></span></div>
+</section>
+
+<!-- 20 シャープ×森岡×アーカー -->
+<section class="slide" aria-label="シャープ・森岡・アーカー比較" style="min-height:860px">
+  <div class="rule"></div>
+  <p class="eyebrow label">比較②｜10章の文脈</p>
+  <h2>アーカー × シャープ × 森岡毅</h2>
+  <table>
+    <thead><tr><th style="width:130px">論点</th><th>アーカー（本書10章）</th><th>バイロン・シャープ（2010）</th><th>森岡毅（2016）</th></tr></thead>
+    <tbody>
+      <tr><td class="rowhead">ブランド観</td><td>企業の無形「資産」（態度ベース）</td><td>記憶と購買行動（行動ベース）</td><td>プレファレンス＝選好確率</td></tr>
+      <tr><td class="rowhead">ロイヤルティ</td><td>エクイティの第1要素（p.205の3効果）</td><td><b>ダブルジョパディ</b>: 浸透率の従属変数で独立には伸ばせない</td><td>プレファレンスに内包（NBDディリクレ）</td></tr>
+      <tr><td class="rowhead">認知</td><td>有無×深さ（brand awareness）</td><td><b>メンタル・アベイラビリティ</b>: 購買文脈（CEP）で想起される幅</td><td>認知率＝経営がコントロールする戦略変数</td></tr>
+      <tr><td class="rowhead">売り場・流通</td><td>流通戦略＋店頭SP（図表9.2第3列）</td><td><b>フィジカル・アベイラビリティ</b>: 見つけやすく買いやすい（理論の中核に昇格）</td><td>配荷率＝戦略変数</td></tr>
+      <tr><td class="rowhead">値引き</td><td>長期的にブランド・イメージ毀損リスク（p.177）</td><td>既存客への補助金にすぎないと批判（同方向でより急進的）</td><td>価格はプレファレンスの構成要素</td></tr>
+    </tbody>
+  </table>
+  <p class="kicker" style="margin-top:16px">系譜: アーカー（1991/1994）→ アレンバーグ学派の実証を継いだシャープ（2010）が「ロイヤルティ神話」を批判 → 森岡（2016）が同じ数理（NBDディリクレ）を日本の実務語彙で実装。シャープはアーカー全否定ではなく、批判の焦点はロイヤルティと差別化への過信。</p>
+  <div class="foot"><span>出典: 『How Brands Grow』『確率思考の戦略論』＋本書スキャン実読範囲。詳細は 02_外部理論との比較整理.md</span><span class="pg"></span></div>
+</section>
+
+<!-- 21 アベイラビリティ×論文 -->
+<section class="slide" aria-label="アベイラビリティと論文">
+  <div class="rule"></div>
+  <p class="eyebrow label">比較②の応用</p>
+  <h2>ポップアップとKOLをこの語彙で書く</h2>
+  <div class="stack">
+    <div class="card">
+      <p><b>ポップアップストア</b>＝一時的に Presence／Prominence を獲得する<b>フィジカル・アベイラビリティ</b>施策。同時に、来店体験がUGCを生み記憶に文脈を植える。</p>
+    </div>
+    <div class="card">
+      <p><b>KOL投稿</b>＝「ギフト」「推し活」「自分へのご褒美」などの購買文脈（CEP）にブランドを紐づける<b>メンタル・アベイラビリティ</b>形成装置。真正性はその紐づけの質。</p>
+    </div>
+    <div class="card-accent">
+      <p><b>理論的緊張を論文の売りに</b>——エクイティ論はロイヤルティを資産と見るが、ダブルジョパディ（シャープ）と一時的所有・リキッド消費（山本先生の研究）はその前提を揺さぶる。指導教員の系譜と国際的論争を1つのRQに束ねられる。</p>
+    </div>
+  </div>
+  <div class="foot"><span>出典: 02_外部理論との比較整理.md（2.3節）</span><span class="pg"></span></div>
+</section>
+
+<!-- 22 ジョブ理論 -->
+<section class="slide" aria-label="ジョブ理論" style="min-height:860px">
+  <div class="rule"></div>
+  <p class="eyebrow label">比較③｜消費者行動・製品戦略の文脈</p>
+  <h2>ジョブ理論と本書の接点</h2>
+  <div class="flow">
+    <div class="card">
+      <p class="label" style="color:var(--ink-soft); margin-bottom:4px">クリステンセン『ジョブ理論』（2016）</p>
+      <p>顧客は製品を買うのではなく<b>「片づけるべき用事（ジョブ）」のために雇用する</b>。ジョブには機能的・感情的・社会的側面。競合はカテゴリーの外にもいる（ミルクシェイク vs バナナ）。セグメントは属性でなく<b>状況</b>で切る。</p>
+    </div>
+    <div class="flow-arrow">本書との対応</div>
+    <div class="card">
+      <p>消費者行動の「問題認識」を状況単位で特定する方法論／製品戦略の「便益の束」の上流工程／属性ベース・セグメンテーションへの対抗仮説。リキッド消費は「所有のジョブ」から「その時々で使い、後で売るジョブ」への変化と読める。</p>
+    </div>
+    <div class="flow-arrow">論文への使い方</div>
+    <div class="card-accent">
+      <p>快楽的製品の購買＝<b>感情的・社会的ジョブ</b>。「アクセサリーが雇われるジョブ＝自己表現・所属表明・ギフト」と定義すると、社会的ジョブには“自分に近い他者”の証言が診断的——というKOL階層効果の機序説明が通る。</p>
+    </div>
+  </div>
+  <div class="foot"><span>出典: 『ジョブ理論』（2017邦訳）＋本書章構成。前史: 破壊的イノベーション論・レビット「ドリルと穴」</span><span class="pg"></span></div>
+</section>
+
+<!-- 23 次のステップ -->
+<section class="slide" aria-label="次のステップ">
+  <div class="rule"></div>
+  <p class="eyebrow label">今後の進め方</p>
+  <h2>未収録章とネクストアクション</h2>
+  <ol class="book">
+    <li><span class="no">1</span><b>第4部（デジタル環境下の2章）のスキャンを最優先で追加</b> — 論文レビューの本丸。次いで第3部（消費者行動・リサーチ）</li>
+    <li><span class="no">2</span>追加され次第、<b>章ごとに同じ粒度で拡張</b> — 骨格→図表の完全再現→色付き語・太字解説→論文接続→チェックリスト</li>
+    <li><span class="no">3</span>ゼミの出題形式（穴埋め／図表再現／記述）が分かれば、チェックリストを形式別に再編成</li>
+  </ol>
+  <p class="kicker" style="margin-top:24px">本スライドは1枚ずつ縦に流れる構成（左右分割なし）。収まらない流れは縦長スライドで1つの流れのまま掲載している。</p>
+  <div class="foot"><span>詳細ノート: core-text-marketing/ 01・02 の各Markdown</span><span class="pg"></span></div>
+</section>
+
+</main>
+
+<script>
+  (function(){
+    var deck = document.getElementById('deck');
+    function fit(){
+      var avail = Math.min(document.documentElement.clientWidth - 32, 1280);
+      var z = avail / 1280;
+      deck.style.zoom = z < 1 ? z : 1;
+    }
+    window.addEventListener('resize', fit);
+    fit();
+  })();
+</script>
