@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <title>家系図</title>
 <style>
-  @page { size: 3400px 1040px; margin: 0; }
+  @page { size: 3400px 1290px; margin: 0; }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
     font-family: "IPAPGothic", "IPAGothic", sans-serif;
@@ -80,6 +80,15 @@
     width: 180px;
     text-align: center;
     box-shadow: 1px 2px 4px rgba(90,75,45,.15);
+  }
+  .person .photo {
+    width: 110px; height: 110px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: 50% 35%;
+    border: 2px solid #b0a181;
+    margin: 2px auto 8px;
+    display: block;
   }
   .person .name {
     font-size: 24px;
@@ -320,6 +329,7 @@
           <li>
             <div class="couple">
               <div class="person">
+                <img class="photo" src="photos/takeshi.jpg" alt="">
                 <div class="name"><span class="sei">坂本</span>武</div>
                 <div class="birth">1971.6.11 <span class="eto">（亥）</span></div>
               </div>
@@ -332,10 +342,12 @@
             </div>
             <ul class="kids-v">
               <li><div class="person blood">
+                <img class="photo" src="photos/minori.jpg" alt="">
                 <div class="name">美乃莉</div>
                 <div class="birth">2002.8.19 <span class="eto">（午）</span></div>
               </div></li>
               <li><div class="person blood">
+                <img class="photo" src="photos/takuma.jpg" alt="">
                 <div class="name">拓馬</div>
                 <div class="birth">2005.12.5 <span class="eto">（酉）</span></div>
               </div></li>
@@ -355,6 +367,7 @@
             </div>
             <ul class="kids-v">
               <li><div class="person blood">
+                <img class="photo" src="photos/kiki.jpg" alt="">
                 <div class="name">希妃</div>
                 <div class="birth">2003.12.18 <span class="eto">（未）</span></div>
               </div></li>
@@ -363,6 +376,7 @@
           <li>
             <div class="couple">
               <div class="person blood">
+                <img class="photo" src="photos/miho.jpg" alt="">
                 <div class="name"><span class="sei">大東</span>美穂</div>
                 <div class="birth">1978.5.10 <span class="eto">（午）</span></div>
                 <div class="memo">2025.5.23 中島姓に</div>
