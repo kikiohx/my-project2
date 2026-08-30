@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>家系図</title>
+<style>
+  @page { size: 3400px 1040px; margin: 0; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "IPAPGothic", "IPAGothic", sans-serif;
+    background: #faf6ee;
+    color: #3a3226;
+    width: 3400px;
+    padding: 40px 30px 30px;
+  }
+  h1 {
+    text-align: center;
+    font-size: 44px;
+    letter-spacing: 24px;
+    margin-bottom: 6px;
+  }
+  .subtitle {
+    text-align: center;
+    font-size: 18px;
+    color: #8a7a5c;
+    letter-spacing: 4px;
+    margin-bottom: 24px;
+  }
+
+  /* ---- tree connectors ---- */
+  .tree ul {
+    display: flex;
+    justify-content: center;
+    padding-top: 26px;
+    position: relative;
+    list-style: none;
+  }
+  /* vertical line dropping from parent to children bus */
+  .tree ul::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%;
+    border-left: 3px solid #a08c64;
+    height: 26px;
+  }
+  .tree li {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    padding: 26px 14px 0 14px;
+  }
+  .tree li::before, .tree li::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 50%;
+    border-top: 3px solid #a08c64;
+    width: 50%; height: 26px;
+  }
+  .tree li::after {
+    right: auto; left: 50%;
+    border-left: 3px solid #a08c64;
+  }
+  .tree li:only-child::after, .tree li:only-child::before { display: none; }
+  .tree li:first-child::before, .tree li:last-child::after { border-top: 0 none; }
+  .tree li:last-child::before {
+    border-right: 3px solid #a08c64;
+    border-radius: 0 8px 0 0;
+  }
+  .tree li:first-child::after { border-radius: 8px 0 0 0; }
+  .tree > ul { padding-top: 0; }
+  .tree > ul::before { display: none; }
+
+  /* ---- person cards ---- */
+  .person {
+    background: #fff;
+    border: 2px solid #b0a181;
+    border-radius: 10px;
+    padding: 10px 14px 8px;
+    width: 180px;
+    text-align: center;
+    box-shadow: 1px 2px 4px rgba(90,75,45,.15);
+  }
+  .person .name {
+    font-size: 24px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+    white-space: nowrap;
+  }
+  .person .name .sei { font-size: 17px; color: #8a7a5c; margin-right: 4px; }
+  .person .birth { font-size: 16px; white-space: nowrap; }
+  .person .eto { color: #8a7a5c; }
+  .person .death {
+    font-size: 14px;
+    color: #9c4a3c;
+    margin-top: 3px;
+    white-space: nowrap;
+  }
+  .person .memo {
+    font-size: 13px;
+    color: #4a6f9c;
+    margin-top: 3px;
+    white-space: nowrap;
+  }
+  .blood { border-color: #8a6d3b; border-width: 3px; background: #fdf3dd; }
+  .deceased { background: #efece4; }
+  .blood.deceased { background: #ece2cc; }
+
+  /* ---- couples ---- */
+  .couple { display: flex; align-items: center; }
+  .marr {
+    width: 34px;
+    display: flex; flex-direction: column; align-items: center;
+    flex-shrink: 0;
+  }
+  .marr .dbl {
+    width: 100%;
+    height: 9px;
+    border-top: 3px solid #a08c64;
+    border-bottom: 3px solid #a08c64;
+  }
+  .marr.dashed .dbl { border-top-style: dashed; border-bottom-style: dashed; }
+  .marr .mlabel {
+    font-size: 12px;
+    color: #4a6f9c;
+    white-space: nowrap;
+    margin-top: 3px;
+  }
+
+  /* ---- leaf children shown as vertical stack ---- */
+  ul.kids-v {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 26px;
+    position: relative;
+    list-style: none;
+  }
+  ul.kids-v::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%;
+    border-left: 3px solid #a08c64;
+    height: 26px;
+  }
+  ul.kids-v li { padding: 0 0 10px 0; }
+  ul.kids-v li::before, ul.kids-v li::after { display: none; }
+  ul.kids-v .person { width: 172px; }
+  ul.kids-v .person .name { font-size: 21px; }
+
+  /* legend + notes */
+  .legend {
+    position: absolute;
+    top: 40px; left: 40px;
+    font-size: 16px;
+    line-height: 1.9;
+    background: #fff;
+    border: 1px solid #cbbfa4;
+    border-radius: 8px;
+    padding: 14px 20px;
+    color: #55492f;
+  }
+  .legend .chip {
+    display: inline-block;
+    width: 22px; height: 15px;
+    border-radius: 4px;
+    vertical-align: -2px;
+    margin-right: 8px;
+    border: 2px solid #b0a181;
+    background: #fff;
+  }
+  .legend .chip.b { border-color: #8a6d3b; background: #fdf3dd; }
+  .legend .chip.d { background: #efece4; }
+  .notes {
+    margin-top: 28px;
+    font-size: 15px;
+    color: #6b5f45;
+    line-height: 1.8;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+<div class="legend">
+  <div><span class="chip b"></span>石黒トヱさんの血族（推定含む）</div>
+  <div><span class="chip"></span>婚姻により一族に加わった方</div>
+  <div><span class="chip d"></span>故人（†は没年月日・享年）</div>
+  <div>＝ 婚姻　　（　）内は干支</div>
+</div>
+
+<h1>家 系 図</h1>
+<div class="subtitle">― 誕生日一覧より作成 ―</div>
+
+<div class="tree">
+<ul>
+<li>
+  <div class="person blood deceased">
+    <div class="name"><span class="sei">石黒</span>トヱ</div>
+    <div class="birth">1898.8.24 <span class="eto">（戌）</span></div>
+    <div class="death">†1997.1.28（98歳）</div>
+  </div>
+  <ul>
+  <li>
+    <div class="couple">
+      <div class="person blood deceased">
+        <div class="name"><span class="sei">石黒</span>一雄</div>
+        <div class="birth">1922.10.29 <span class="eto">（戌）</span></div>
+        <div class="death">†2021.8.13（98歳）</div>
+      </div>
+      <div class="marr"><div class="dbl"></div></div>
+      <div class="person deceased">
+        <div class="name">静子</div>
+        <div class="birth">1924.12.30 <span class="eto">（子）</span></div>
+        <div class="death">†2020.8.27（95歳）</div>
+      </div>
+    </div>
+    <ul>
+      <!-- ===== 石黒 純一 家 ===== -->
+      <li>
+        <div class="couple">
+          <div class="person blood">
+            <div class="name"><span class="sei">石黒</span>純一</div>
+            <div class="birth">1948.2.18 <span class="eto">（子）</span></div>
+          </div>
+          <div class="marr"><div class="dbl"></div></div>
+          <div class="person deceased">
+            <div class="name">裕子</div>
+            <div class="birth">1949.11.16 <span class="eto">（丑）</span></div>
+            <div class="death">†2023.10.24（73歳）</div>
+          </div>
+        </div>
+        <ul>
+          <li>
+            <div class="couple">
+              <div class="person blood">
+                <div class="name"><span class="sei">石黒</span>貴之</div>
+                <div class="birth">1976.7.4 <span class="eto">（辰）</span></div>
+              </div>
+              <div class="marr"><div class="dbl"></div></div>
+              <div class="person">
+                <div class="name">美絵</div>
+                <div class="birth">1979.3.9 <span class="eto">（未）</span></div>
+              </div>
+            </div>
+            <ul class="kids-v">
+              <li><div class="person blood">
+                <div class="name">真都</div>
+                <div class="birth">2016.5.3 <span class="eto">（申）</span></div>
+              </div></li>
+              <li><div class="person blood">
+                <div class="name">澪 <span style="font-size:14px;color:#8a7a5c">※</span></div>
+                <div class="birth">2022.10.4 <span class="eto">（寅）</span></div>
+              </div></li>
+            </ul>
+          </li>
+          <li>
+            <div class="couple">
+              <div class="person blood">
+                <div class="name"><span class="sei">石黒</span>誠司</div>
+                <div class="birth">1978.10.18 <span class="eto">（午）</span></div>
+              </div>
+              <div class="marr"><div class="dbl"></div></div>
+              <div class="person">
+                <div class="name">聖子</div>
+                <div class="birth">1979.11.2 <span class="eto">（未）</span></div>
+              </div>
+            </div>
+            <ul class="kids-v">
+              <li><div class="person blood">
+                <div class="name">和哉</div>
+                <div class="birth">2012.11.2 <span class="eto">（辰）</span></div>
+              </div></li>
+              <li><div class="person blood">
+                <div class="name">花音</div>
+                <div class="birth">2017.5.1 <span class="eto">（酉）</span></div>
+              </div></li>
+            </ul>
+          </li>
+          <li>
+            <div class="couple">
+              <div class="person">
+                <div class="name"><span class="sei">中山</span>敬司</div>
+                <div class="birth">1973.6.27 <span class="eto">（丑）</span></div>
+              </div>
+              <div class="marr"><div class="dbl"></div></div>
+              <div class="person blood">
+                <div class="name">翠</div>
+                <div class="birth">1980.6.7 <span class="eto">（申）</span></div>
+              </div>
+            </div>
+            <ul class="kids-v">
+              <li><div class="person blood">
+                <div class="name">泉</div>
+                <div class="birth">2009.11.17 <span class="eto">（丑）</span></div>
+              </div></li>
+              <li><div class="person blood">
+                <div class="name">修司</div>
+                <div class="birth">2012.4.5 <span class="eto">（辰）</span></div>
+              </div></li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <!-- ===== 大東 家 ===== -->
+      <li>
+        <div class="couple">
+          <div class="person">
+            <div class="name"><span class="sei">大東</span>断</div>
+            <div class="birth">1947.7.19 <span class="eto">（亥）</span></div>
+          </div>
+          <div class="marr"><div class="dbl"></div></div>
+          <div class="person blood">
+            <div class="name">知子</div>
+            <div class="birth">1950.11.9 <span class="eto">（寅）</span></div>
+          </div>
+        </div>
+        <ul>
+          <li>
+            <div class="couple">
+              <div class="person">
+                <div class="name"><span class="sei">坂本</span>武</div>
+                <div class="birth">1971.6.11 <span class="eto">（亥）</span></div>
+              </div>
+              <div class="marr"><div class="dbl"></div></div>
+              <div class="person blood deceased">
+                <div class="name">葉子</div>
+                <div class="birth">1973.4.11 <span class="eto">（丑）</span></div>
+                <div class="death">†2026.4.2（52歳）</div>
+              </div>
+            </div>
+            <ul class="kids-v">
+              <li><div class="person blood">
+                <div class="name">美乃莉</div>
+                <div class="birth">2002.8.19 <span class="eto">（午）</span></div>
+              </div></li>
+              <li><div class="person blood">
+                <div class="name">拓馬</div>
+                <div class="birth">2005.12.5 <span class="eto">（酉）</span></div>
+              </div></li>
+            </ul>
+          </li>
+          <li>
+            <div class="couple">
+              <div class="person blood">
+                <div class="name"><span class="sei">大東</span>徹也</div>
+                <div class="birth">1975.7.19 <span class="eto">（卯）</span></div>
+              </div>
+              <div class="marr"><div class="dbl"></div></div>
+              <div class="person">
+                <div class="name">久美</div>
+                <div class="birth">1976.5.30 <span class="eto">（辰）</span></div>
+              </div>
+            </div>
+            <ul class="kids-v">
+              <li><div class="person blood">
+                <div class="name">希妃</div>
+                <div class="birth">2003.12.18 <span class="eto">（未）</span></div>
+              </div></li>
+            </ul>
+          </li>
+          <li>
+            <div class="couple">
+              <div class="person blood">
+                <div class="name"><span class="sei">大東</span>美穂</div>
+                <div class="birth">1978.5.10 <span class="eto">（午）</span></div>
+                <div class="memo">2025.5.23 中島姓に</div>
+              </div>
+              <div class="marr dashed"><div class="dbl"></div></div>
+              <div class="person">
+                <div class="name"><span class="sei">中島</span>陽介</div>
+                <div class="birth">1978.10.11 <span class="eto">（午）</span></div>
+              </div>
+            </div>
+            <ul class="kids-v">
+              <li><div class="person blood">
+                <div class="name">愛果</div>
+                <div class="birth">2014.1.24 <span class="eto">（午）</span></div>
+              </div></li>
+              <li><div class="person blood">
+                <div class="name">蒼弥</div>
+                <div class="birth">2015.9.17 <span class="eto">（未）</span></div>
+              </div></li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <!-- ===== 露口 家 ===== -->
+      <li>
+        <div class="couple">
+          <div class="person">
+            <div class="name"><span class="sei">露口</span>洋一郎</div>
+            <div class="birth">1953.11.9 <span class="eto">（巳）</span></div>
+          </div>
+          <div class="marr"><div class="dbl"></div></div>
+          <div class="person blood">
+            <div class="name">真理子</div>
+            <div class="birth">1953.8.6 <span class="eto">（巳）</span></div>
+          </div>
+        </div>
+        <ul>
+          <li>
+            <div class="couple">
+              <div class="person blood">
+                <div class="name"><span class="sei">露口</span>信二</div>
+                <div class="birth">1986.12.8 <span class="eto">（寅）</span></div>
+              </div>
+              <div class="marr"><div class="dbl"></div></div>
+              <div class="person">
+                <div class="name">紫緒里</div>
+                <div class="birth">1980.12.26 <span class="eto">（申）</span></div>
+              </div>
+            </div>
+            <ul class="kids-v">
+              <li><div class="person blood">
+                <div class="name">結羽</div>
+                <div class="birth">2001.11.23 <span class="eto">（巳）</span></div>
+              </div></li>
+              <li><div class="person blood">
+                <div class="name">凛音</div>
+                <div class="birth">2004.10.3 <span class="eto">（申）</span></div>
+              </div></li>
+              <li><div class="person blood">
+                <div class="name">碧葉</div>
+                <div class="birth">2013.11.29 <span class="eto">（巳）</span></div>
+              </div></li>
+            </ul>
+          </li>
+          <li>
+            <div class="person blood">
+              <div class="name"><span class="sei">露口</span>洋暁</div>
+              <div class="birth">1982.3.23 <span class="eto">（戌）</span></div>
+            </div>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  </ul>
+</li>
+</ul>
+</div>
+
+<div class="notes">
+  ※ 石黒トヱ－一雄の親子関係、および知子・真理子が一雄・静子夫妻の子（純一のきょうだい）である点は、一覧表の並びからの推定です。<br>
+  ※「澪」（2022.10.4生）は原本の文字が判読しづらいため、名前が異なる可能性があります。
+  ※ 大東美穂は2025.5.23に中島陽介と婚姻し中島姓となっています（愛果・蒼弥の続柄は原本の記載に基づき美穂の子として記載）。
+</div>
+</body>
+</html>
